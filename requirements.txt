@@ -1,0 +1,2 @@
+Flask==2.3.2
+xmlrunner==1.7.7
