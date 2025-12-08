@@ -1,0 +1,76 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials' 
+        DOCKER_IMAGE = 'jearod/cicd-assessment'
+        SONAR_TOKEN = credentials('sonar-token')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo '--- Clonando Repositorio ---'
+                checkout scm
+            }
+        }
+
+        stage('Test & Code Quality') {
+            steps {
+                echo '--- Ejecutando Tests ---'
+                // Entramos a la carpeta 'app' para correr los tests
+                dir('app') {
+                    sh 'pip install -r requirements.txt'
+                    sh 'python -m xmlrunner test_app.py --output ../test-reports'
+                }
+            }
+            post {
+                always {
+                    // El reporte quedó un nivel arriba
+                    junit 'test-reports/*.xml'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo '--- Análisis con SonarQube ---'
+                withSonarQubeEnv('SonarQube-Server') {
+                    // Ajustamos 'sonar.sources' para que apunte a la carpeta app
+                    sh "sonar-scanner \
+                        -Dsonar.projectKey=mi-proyecto-devops \
+                        -Dsonar.sources=app \
+                        -Dsonar.host.url=http://sonarqube:9000 \
+                        -Dsonar.login=${SONAR_TOKEN}"
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo '--- Construyendo Imagen Docker ---'
+                script {
+                    dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_NUMBER}", "-f pipeline/Dockerfile .")
+                }
+            }
+        }
+
+        stage('Security Scan (Trivy)') {
+            steps {
+                sh "trivy image --severity CRITICAL,HIGH --exit-code 0 ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                echo '--- Subiendo imagen a DockerHub ---'
+                script {
+                    docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
+                        dockerImage.push()
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
+    }
+}
