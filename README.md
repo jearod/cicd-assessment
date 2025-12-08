@@ -43,7 +43,7 @@ Para ejecutar la aplicación en un entorno local de desarrollo:
 ### Ejecución Manual
 ```bash
 # Instalar dependencias
-pip install -r requirements.txt
+pip install -r app/requirements.txt
 
 # Ejecutar la aplicación
-python app.py
+python app/app.py
