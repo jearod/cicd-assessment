@@ -37,8 +37,8 @@ pipeline {
                 echo '--- Análisis con SonarQube ---'
                 withSonarQubeEnv('SonarQube-Server') {
                     // Ajustamos 'sonar.sources' para que apunte a la carpeta app
-                    sh "sonar-scanner \
-                        -Dsonar.projectKey=mi-proyecto-devops \
+                    sh "sonar/bin/sonar-scanner \
+                        -Dsonar.projectKey=cicd-assessment \
                         -Dsonar.sources=app \
                         -Dsonar.host.url=http://sonarqube:9000 \
                         -Dsonar.login=${SONAR_TOKEN}"
