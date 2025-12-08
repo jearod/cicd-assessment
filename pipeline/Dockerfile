@@ -18,7 +18,7 @@ COPY app/ .
 EXPOSE 5000
 
 # Usuario para Trivy/Sonar
-RUN useradd -mmyuser
+RUN useradd -myuser
 USER myuser
 
 # Comando de inicio
