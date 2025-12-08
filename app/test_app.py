@@ -12,7 +12,7 @@ class BasicTests(unittest.TestCase):
         # Verificar que la ruta '/' devuelve 200 y el mensaje correcto
         response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Hello DevOps World', response.data)
+        self.assertIn(b'Hello MISIA 2025!', response.data)
 
     def test_health(self):
         # Verificar endpoint de salud
