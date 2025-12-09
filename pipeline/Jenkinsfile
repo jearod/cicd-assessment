@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials' 
-        DOCKER_IMAGE = 'jearod/cicd-assessment'
+        DOCKER_IMAGE = 'jearod17/cicd-assessment'
         SONAR_TOKEN = credentials('sonar-token')
     }
 
