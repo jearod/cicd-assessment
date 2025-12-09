@@ -18,8 +18,8 @@ COPY app/ .
 EXPOSE 5000
 
 # Usuario para Trivy/Sonar
-RUN useradd -myuser
+RUN useradd -m myuser
 USER myuser
 
 # Comando de inicio
-CMD ["python", "app.py"]
+CMD ["python", "app.py"] 
